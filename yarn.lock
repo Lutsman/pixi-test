@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"@types/pixi.js@^4.8.0":
+  version "4.8.4"
+  resolved "https://registry.yarnpkg.com/@types/pixi.js/-/pixi.js-4.8.4.tgz#5111491292571aeaeacfc79edf92476e20fd7898"
+
 "@webassemblyjs/ast@1.7.11":
   version "1.7.11"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.7.11.tgz#b988582cafbb2b095e8b556526f30c90d057cace"
@@ -3715,6 +3719,12 @@ pinkie@^2.0.0:
 pixi-gl-core@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/pixi-gl-core/-/pixi-gl-core-1.1.4.tgz#8b4b5c433b31e419bc379dc565ce1b835a91b372"
+
+pixi-spine@^1.5.19:
+  version "1.5.19"
+  resolved "https://registry.yarnpkg.com/pixi-spine/-/pixi-spine-1.5.19.tgz#a606ce3f679af9e388449b2e2ae3463c9a3fec31"
+  dependencies:
+    "@types/pixi.js" "^4.8.0"
 
 pixi.js@^4.8.2:
   version "4.8.2"
