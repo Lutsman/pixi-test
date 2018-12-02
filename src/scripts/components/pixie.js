@@ -8,7 +8,7 @@ app.stop();
 
 // load spine data
 PIXI.loader
-    .add('pixie', 'assets/chars/pixie/pixie.json')
+    .add('pixie', 'assets/chars/pixie/Pixie.json')
     .load(onAssetsLoaded);
 
 var postition = 0,
@@ -47,7 +47,7 @@ function onAssetsLoaded(loader,res) {
     pixie.stateData.setMix('running', 'jump', 0.2);
     pixie.stateData.setMix('jump', 'running', 0.4);
 
-    pixie.state.setAnimation(0, 'running', true);
+    pixie.state.setAnimation(0, 'idle', true);
 
     app.stage.on('pointerdown', onTouchStart);
 
