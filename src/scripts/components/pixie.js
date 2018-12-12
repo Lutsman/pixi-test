@@ -8,7 +8,7 @@ app.stop();
 
 // load spine data
 PIXI.loader
-    .add('pixie', 'assets/chars/pixie/Pixie.json')
+    .add('pixie', 'assets/chars/pixie/pixie.json')
     .load(onAssetsLoaded);
 
 var postition = 0,

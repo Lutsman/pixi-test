@@ -1,6 +1,6 @@
 // import './dragon';
 // import './boy';
 // import './goblins';
-import './pixie';
+// import './pixie';
 // import './six-player';
-import './turtorial';
+import './six-player';
