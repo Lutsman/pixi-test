@@ -31,10 +31,26 @@ export const setupDragon = character => {
     return character;
 };
 
+export const setCharacterDimension = (character, options) => {
+    const {maxWidth, maxHeight} = options;
+
+    if (!maxWidth && !maxHeight) return character;
+
+    if (maxHeight) {
+        character.height = maxHeight;
+    }
+
+    if (maxWidth && character.width > maxWidth) {
+        character.width = maxWidth;
+    }
+
+    return character;
+};
+
 export const setupCharacter = (character, options) => {
     let setuper;
 
-    switch (character.name) {
+    switch (character.charName) {
         case CHARACTER_SOURCE.goblin.name :
             setuper = setupGoblin;
             break;
@@ -58,7 +74,7 @@ export const creatRandomCharacters = (res, limit = 1, options) => {
     for (let i = 0; i < limit; i++) {
         const name = getRandomItemFromObj(CHARACTER_SOURCE).name;
         let character = new Spine(res[name].spineData);
-        character.name = name;
+        character.charName = name;
         characterSet.push(character);
     }
 

@@ -1,11 +1,14 @@
 import PIXI, {Application, loader} from './aliases';
 import {CHARACTER_SOURCE} from './characterSource';
 import {creatRandomCharacters} from './characterCreator';
+import {HelloScene} from './helloScene';
 
 
+const stageWidth = document.documentElement.clientWidth;
+const stageHeight = document.documentElement.clientHeight;
 const app = new Application({
-    width: document.documentElement.clientWidth,
-    height: document.documentElement.clientHeight,
+    width: stageWidth,
+    height: stageHeight,
 });
 document.body.appendChild(app.view);
 
@@ -31,7 +34,14 @@ function onAssetsLoaded(loader, res) {
     const team1 = creatRandomCharacters(res, 3);
     const team2 = creatRandomCharacters(res, 3);
 
+    const helloSceneController = new HelloScene({
+        stageWidth,
+        stageHeight,
+        team1,
+        team2,
+    });
 
+    app.stage.addChild(helloSceneController.container);
 
     // app.stage.addChild(goblin);
     //
