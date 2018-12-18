@@ -1,14 +1,14 @@
-import PIXI, {Application, loader} from './aliases';
+import {Application, loader} from './aliases';
 import {CHARACTER_SOURCE} from './characterSource';
 import {creatRandomCharacters} from './characterCreator';
-import {HelloScene} from './helloScene';
+import {HelloScene} from './HelloScene';
 
 
-const stageWidth = document.documentElement.clientWidth;
-const stageHeight = document.documentElement.clientHeight;
+const width = document.documentElement.clientWidth;
+const height = document.documentElement.clientHeight;
 const app = new Application({
-    width: stageWidth,
-    height: stageHeight,
+    width,
+    height,
 });
 document.body.appendChild(app.view);
 
@@ -35,13 +35,29 @@ function onAssetsLoaded(loader, res) {
     const team2 = creatRandomCharacters(res, 3);
 
     const helloSceneController = new HelloScene({
-        stageWidth,
-        stageHeight,
+        width,
+        height,
         team1,
         team2,
     });
 
     app.stage.addChild(helloSceneController.container);
+
+    // app.stage.on('click', e => {
+    //     const target = e.target;
+    //     console.dir(e);
+    //     console.dir(target);
+    // });
+
+    // function clickHandler(e) {
+    //     const target = e.target;
+    //     console.dir(e);
+    //     console.dir(e.target);
+    //     console.dir(e.target.x);
+    //     console.dir(e.target.y);
+    //     // console.dir(helloSceneController.container.toGlobal(target.position));
+    //     console.dir(target.localTransform);
+    // }
 
     // app.stage.addChild(goblin);
     //
