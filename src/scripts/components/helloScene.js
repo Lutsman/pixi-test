@@ -16,11 +16,7 @@ export class HelloScene extends BaseClass {
 
         this.characterBarTeam1 = null;
         this.characterBarTeam2 = null;
-        this.toolBar = new Button({
-            text: 'Shake hands',
-            disable: true,
-            onClick: this.clickToolBarHandler,
-        });
+        this.toolBar = null;
 
         this.init();
     }
