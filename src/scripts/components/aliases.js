@@ -10,3 +10,4 @@ export const Sprite = PIXI.Sprite;
 export const Container = PIXI.Container;
 export const Text = PIXI.Text;
 export const TextStyle = PIXI.TextStyle;
+export const Graphics = PIXI.Graphics;

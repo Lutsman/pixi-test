@@ -20,7 +20,7 @@ export const getRandomId = (letterCount = 3, numbersCount = 5) => {
     let id = '';
 
     while (letterCount--) {
-      id += getRandomLetter();
+        id += getRandomLetter();
     }
 
     while (numbersCount--) {
@@ -33,7 +33,7 @@ export const getRandomId = (letterCount = 3, numbersCount = 5) => {
 const ID_HASH = new Map();
 
 export const getUniqueId = (letterCount = 3, numbersCount = 5, maxCycles = 1000000) => {
-    while(maxCycles--) {
+    while (maxCycles--) {
         const id = getRandomId(letterCount, numbersCount);
 
         if (ID_HASH.has(id)) continue;
@@ -45,6 +45,51 @@ export const getUniqueId = (letterCount = 3, numbersCount = 5, maxCycles = 10000
     return null;
 };
 
+/**
+ * Converts a string color to a hex color number.
+ *
+ * @function string2hex
+ * @param {string} The string color.
+ * @return {hex} hex - Number in hex
+ */
+
+export const string2hex = string => {
+    let str = string.slice(1);
+    let result = '0x' + str;
+
+    if (str.length === 3) {
+        result = '0x';
+        for (const char of str) {
+            result += char + char;
+        }
+    }
+
+    result = +result;
+
+    return result;
+};
+
+export const isNumeric = n => {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+};
+
+export const parseColor = color => {
+  if (typeof color !== 'string' || color[0] !== '#') {
+      return color;
+  }
+
+  return string2hex(color);
+};
+
+export const parseColorInObject = (obj = {}) => {
+    const newObj = {};
+
+    for (const {key, value} of Object.entries(obj)) {
+        newObj[key] = parseColor(value);
+    }
+
+    return newObj;
+};
 
 export const getRandomItemFromObj = obj => {
     const arr = objectToArray(obj);
