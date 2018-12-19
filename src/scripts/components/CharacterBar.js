@@ -1,6 +1,6 @@
-import {BaseClass} from "./BaseClass";
+import {BaseClass} from './BaseClass';
 import {Graphics, Text, TextStyle} from './aliases';
-import {parseColor, parseColorInObject, isNumeric} from "./utilities";
+import {parseColor, parseColorInObject, isNumeric} from './utilities';
 
 export class CharacterBar extends BaseClass {
     constructor(options) {

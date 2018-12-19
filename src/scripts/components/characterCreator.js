@@ -1,6 +1,6 @@
-import {getRandomItemFromObj, getUniqueId} from "./utilities";
-import {CHARACTER_SOURCE} from "./characterSource";
-import {Spine} from "./aliases";
+import {getRandomItemFromObj, getUniqueId} from './utilities';
+import {CHARACTER_SOURCE} from './characterSource';
+import {Spine} from './aliases';
 
 export const setupGoblin = character => {
     // set current skin

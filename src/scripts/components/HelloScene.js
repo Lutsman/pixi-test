@@ -1,8 +1,9 @@
 import {setupCharacter, setScale} from './characterCreator';
 import {getRandomInt} from './utilities';
-import {BaseClass} from "./BaseClass";
-import {CharacterBar} from "./CharacterBar";
-import {Button} from "./Button";
+import {BaseClass} from './BaseClass';
+import {CharacterBar} from './CharacterBar';
+import {Button} from './Button';
+import {MatrixWalker} from './matrixWalker';
 
 export class HelloScene extends BaseClass {
     constructor(options) {
@@ -33,6 +34,8 @@ export class HelloScene extends BaseClass {
         this.setCharacterPosition(this.team2, this.charOptions.team2, this.containOptions.team2);
         this.setCharacterData(this.team1, {team: 'team1'});
         this.setCharacterData(this.team2, {team: 'team2'});
+        this.creatWalkers(this.team1, this.containOptions.team1);
+        this.creatWalkers(this.team2, this.containOptions.team2);
         this.attachHandlers();
     }
 
@@ -121,7 +124,7 @@ export class HelloScene extends BaseClass {
         for (const character of characterArr) {
             const id = character.customHelpers.id;
             const data = charData.get(id) || {};
-            const currPosition = {
+            const position = {
                 base: {
                     x: character.x,
                     y: character.y,
@@ -133,13 +136,9 @@ export class HelloScene extends BaseClass {
             charData.set(id, {
                 ...data,
                 position: data.position ?
+                    data.position :
                     {
-                        ...data.position,
-                        curr: currPosition,
-                    } :
-                    {
-                        base: currPosition,
-                        curr: currPosition,
+                        base: position,
                     },
                 speed: data.speed ? data.speed : 1,
                 ...optionalFields,
@@ -182,6 +181,25 @@ export class HelloScene extends BaseClass {
             disable: true,
             onClick: this.clickToolBarHandler,
         });
+    }
+
+    creatWalkers(team, container) {
+        for (const character of team) {
+            const obstacles = team.reduce((arr, currCharacter) => {
+                if (character.customHelpers.id === currCharacter.customHelpers.id) {
+                    return arr;
+                }
+
+                return arr.push(currCharacter);
+            }, []);
+            const walker = new MatrixWalker({
+                walker: character,
+                container,
+                obstacles,
+            });
+
+            this.setCharacterData(character, {walker});
+        }
     }
 
     attachHandlers() {

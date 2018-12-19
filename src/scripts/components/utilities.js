@@ -32,7 +32,7 @@ export const getRandomId = (letterCount = 3, numbersCount = 5) => {
 
 const ID_HASH = new Map();
 
-export const getUniqueId = (letterCount = 3, numbersCount = 5, maxCycles = 1000000) => {
+export const getUniqueId = (letterCount = 3, numbersCount = 5, maxCycles = 1e6) => {
     while (maxCycles--) {
         const id = getRandomId(letterCount, numbersCount);
 
