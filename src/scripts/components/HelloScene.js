@@ -1,9 +1,10 @@
 import {setupCharacter, setScale} from './characterCreator';
-import {getRandomInt} from './utilities';
+import {getRandomInt, getUniqueId, execState} from './utilities';
 import {BaseClass} from './BaseClass';
 import {CharacterBar} from './CharacterBar';
 import {Button} from './Button';
 import {MatrixWalker} from './matrixWalker';
+import {setState, removeState} from "./gameState";
 
 export class HelloScene extends BaseClass {
     constructor(options) {
@@ -12,8 +13,11 @@ export class HelloScene extends BaseClass {
         this.team2 = options.team2;
         this.allCharacters = this.team1.concat(this.team2);
         this.characterData = new Map();
+        this.state = null;
         this.containOptions = {};
         this.charOptions = {};
+        this.id = getUniqueId();
+        this.state = new Map();
 
         this.characterBarTeam1 = null;
         this.characterBarTeam2 = null;
@@ -37,6 +41,7 @@ export class HelloScene extends BaseClass {
         this.creatWalkers(this.team1, this.containOptions.team1);
         this.creatWalkers(this.team2, this.containOptions.team2);
         this.attachHandlers();
+        this.addTicker();
     }
 
     getContainOptions(width, height) {
@@ -93,7 +98,7 @@ export class HelloScene extends BaseClass {
         const team2CharacterBar = this.characterBarTeam2.container;
         const toolBar = this.toolBar.container;
 
-        team1CharacterBar.x = team1.x + team1.width / 2 - team1CharacterBar.width / 2 ;
+        team1CharacterBar.x = team1.x + team1.width / 2 - team1CharacterBar.width / 2;
         team1CharacterBar.y = 0;
 
         team2CharacterBar.x = team2.x + team2.width / 2 - team2CharacterBar.width / 2;
@@ -153,6 +158,16 @@ export class HelloScene extends BaseClass {
         return this.characterData.get(id);
     }
 
+    toggleCharBar(charBar, options) {
+        const {id} = charBar.getChar();
+
+        if (id === options.id) {
+            charBar.reset();
+        } else {
+            charBar.setChar(options);
+        }
+    }
+
     renderScene() {
         const container = this.container;
         const characterBarTeam1 = this.characterBarTeam1 = this.renderCharBar();
@@ -186,14 +201,15 @@ export class HelloScene extends BaseClass {
     creatWalkers(team, container) {
         for (const character of team) {
             const obstacles = team.reduce((arr, currCharacter) => {
-                if (character.customHelpers.id === currCharacter.customHelpers.id) {
-                    return arr;
+                if (character.customHelpers.id !== currCharacter.customHelpers.id) {
+                    arr.push(currCharacter);
                 }
 
-                return arr.push(currCharacter);
+                return arr;
             }, []);
             const walker = new MatrixWalker({
                 walker: character,
+                state: this.state,
                 container,
                 obstacles,
             });
@@ -218,16 +234,6 @@ export class HelloScene extends BaseClass {
         }
     }
 
-    toggleBarChar(charBar, options) {
-        const {id} = charBar.getChar();
-
-        if (id === options.id) {
-            charBar.reset();
-        } else {
-            charBar.setChar(options);
-        }
-    }
-
     clickCharacterHandler = e => {
         const character = e.target;
         const data = this.getCharacterData(character.customHelpers.id);
@@ -238,9 +244,9 @@ export class HelloScene extends BaseClass {
         };
 
         if (data.team === 'team1') {
-            this.toggleBarChar(this.characterBarTeam1, charOptions);
+            this.toggleCharBar(this.characterBarTeam1, charOptions);
         } else {
-            this.toggleBarChar(this.characterBarTeam2, charOptions);
+            this.toggleCharBar(this.characterBarTeam2, charOptions);
         }
 
         if (this.characterBarTeam1.isFilled && this.characterBarTeam2.isFilled) {
@@ -251,7 +257,36 @@ export class HelloScene extends BaseClass {
     };
 
     clickToolBarHandler = e => {
-        console.dir(e.target);
-        console.log('Shake hands!');
+        const char1 = this.characterBarTeam1.getChar();
+        const char2 = this.characterBarTeam2.getChar();
+        const walker1 = this.getCharacterData(char1.id).walker;
+        const walker2 = this.getCharacterData(char2.id).walker;
+        const middle1 = {
+            x: this.width / 2 - 100,
+            y: this.height / 2 - 100,
+        };
+        const middle2 = {
+            x: this.width / 2 + 100,
+            y: this.height / 2 - 100,
+        };
+
+        Promise.all([
+            walker1.go(middle1),
+            walker2.go(middle2),
+        ]).then(() => {
+            setTimeout(() => {
+                walker1.goBack();
+                walker2.goBack();
+            }, 1000);
+        });
+
     };
+
+    addTicker() {
+        setState(this.id, execState(this.state));
+    }
+
+    removeTicker() {
+        removeState(this.id);
+    }
 }

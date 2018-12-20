@@ -2,7 +2,8 @@ import {Application, loader} from './aliases';
 import {CHARACTER_SOURCE} from './characterSource';
 import {creatRandomCharacters} from './characterCreator';
 import {HelloScene} from './HelloScene';
-import {getStates} from './gameState';
+import {stateExecutor} from './gameState';
+
 
 
 const width = document.documentElement.clientWidth;
@@ -14,11 +15,7 @@ const app = new Application({
 
 document.body.appendChild(app.view);
 
-const gameloop = delta => {
-    for (const state of getStates()) {
-        state(delta);
-    }
-};
+const gameloop = stateExecutor;
 
 const onAssetsLoaded = (loader, res) => {
     const team1 = creatRandomCharacters(res, 3);

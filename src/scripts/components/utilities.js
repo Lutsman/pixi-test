@@ -73,6 +73,67 @@ export const isNumeric = n => {
     return !isNaN(parseFloat(n)) && isFinite(n);
 };
 
+export const objectEqual = ( x, y ) => {
+    if ( x === y ) return true;
+    // if both x and y are null or undefined and exactly the same
+
+    if ( ! ( x instanceof Object ) || ! ( y instanceof Object ) ) return false;
+    // if they are not strictly equal, they both need to be Objects
+
+    if ( x.constructor !== y.constructor ) return false;
+    // they must have the exact same prototype chain, the closest we can do is
+    // test there constructor.
+
+    for ( var p in x ) {
+        if ( ! x.hasOwnProperty( p ) ) continue;
+        // other properties were tested using x.constructor === y.constructor
+
+        if ( ! y.hasOwnProperty( p ) ) return false;
+        // allows to compare x[ p ] and y[ p ] when set to undefined
+
+        if ( x[ p ] === y[ p ] ) continue;
+        // if they have the same strict value or identity then they are equal
+
+        if ( typeof( x[ p ] ) !== "object" ) return false;
+        // Numbers, Strings, Functions, Booleans must be strictly equal
+
+        if ( ! Object.equals( x[ p ],  y[ p ] ) ) return false;
+        // Objects and Arrays must be tested recursively
+    }
+
+    for ( p in y ) {
+        if ( y.hasOwnProperty( p ) && ! x.hasOwnProperty( p ) ) return false;
+        // allows x[ p ] to be set to undefined
+    }
+    return true;
+};
+
+export const isEquivalent = (a, b) => {
+    // Create arrays of property names
+    const aProps = Object.getOwnPropertyNames(a);
+    const bProps = Object.getOwnPropertyNames(b);
+
+    // If number of properties is different,
+    // objects are not equivalent
+    if (aProps.length != bProps.length) {
+        return false;
+    }
+
+    for (let i = 0; i < aProps.length; i++) {
+        const propName = aProps[i];
+
+        // If values of same property are not equal,
+        // objects are not equivalent
+        if (a[propName] !== b[propName]) {
+            return false;
+        }
+    }
+
+    // If we made it this far, objects
+    // are considered equivalent
+    return true;
+};
+
 export const parseColor = color => {
   if (typeof color !== 'string' || color[0] !== '#') {
       return color;
@@ -180,18 +241,11 @@ export function hasCollision(r1, r2, buffer = 0) {
     return hit;
 };
 
-export const moveObserver = (tower, partisans, extraTowerRange) => {
-    let catchedPartisans = [];
-
-    for (const partisan of partisans) {
-        if (hasCollision(tower, partisan, extraTowerRange)) {
-            catchedPartisans.push(partisan);
-        }
+export const execState = states => delta => {
+    for (const state of states.values()) {
+        state(delta);
     }
-
-    return catchedPartisans;
 };
 
-export const moveTo = (destX, destY, character, container, containerChildren, options) => {
-
-};
+export const revertArray = arr =>
+    arr.reduceRight((arr, item) => [...arr, item], []);
