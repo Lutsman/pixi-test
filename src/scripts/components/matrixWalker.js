@@ -132,6 +132,12 @@ export class MatrixWalker {
 
         if (pause) return;
 
+        if (steps[activeStep].x < steps[nextStep].x) {
+            walker.scale.x = Math.abs(walker.scale.x);
+        } else {
+            walker.scale.x = Math.abs(walker.scale.x) * -1;
+        }
+
         walker.x = steps[nextStep].x;
         walker.y = steps[nextStep].y;
 
@@ -140,11 +146,13 @@ export class MatrixWalker {
 
     addTicker() {
         this.state.set(this.id, this.ticker);
+        this.walker.customHelpers.go();
         this.isWalking = true;
     }
 
     removeTicker() {
         this.state.delete(this.id);
+        this.walker.customHelpers.stop();
         this.isWalking = false;
     }
 

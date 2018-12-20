@@ -13,7 +13,7 @@ export const setupGoblin = character => {
         character.customHelpers.isAnimating = true;
     };
     character.customHelpers.stop = () => {
-        character.state.setEmptyAnimation(0, 1);
+        character.state.setEmptyAnimation(0, 0.1);
         character.customHelpers.isAnimating = false;
     };
     console.log('goblin');
