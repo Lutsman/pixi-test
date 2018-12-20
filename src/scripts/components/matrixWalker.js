@@ -2,13 +2,13 @@ import {contain, hasCollision, getUniqueId, revertArray} from './utilities';
 
 export class MatrixWalker {
     constructor({
-        walker,
+        character,
         container,
         obstacles,
         state,
         speed,
                 }) {
-        this.walker = walker;
+        this.character = character;
         this.container = container;
         this.obstacles = obstacles;
         this.speed = speed || 1;
@@ -24,19 +24,19 @@ export class MatrixWalker {
     getPathTemplate(target) {
         return {
             // curr: {
-            //     x: this.walker.x,
-            //     y: this.walker.y,
+            //     x: this.character.x,
+            //     y: this.character.y,
             // },
             start: {
-                x: Math.floor(this.walker.x),
-                y: Math.floor(this.walker.y),
+                x: Math.floor(this.character.x),
+                y: Math.floor(this.character.y),
             },
             end: {
                 x: Math.floor(target.x),
                 y: Math.floor(target.y),
             },
-            width: this.walker.width,
-            height: this.walker.height,
+            width: this.character.width,
+            height: this.character.height,
             steps: [],
             activeStep: 0,
             described: false,
@@ -49,15 +49,15 @@ export class MatrixWalker {
     go(target) {
         const pathStart = {
             start: {
-                x: Math.floor(this.walker.x),
-                y: Math.floor(this.walker.y),
+                x: Math.floor(this.character.x),
+                y: Math.floor(this.character.y),
             },
             end: {
                 x: Math.floor(target.x),
                 y: Math.floor(target.y),
             },
-            width: this.walker.width,
-            height: this.walker.height,
+            width: this.character.width,
+            height: this.character.height,
             steps: [],
             activeStep: 0,
             described: false,
@@ -81,6 +81,24 @@ export class MatrixWalker {
         path.steps = revertArray(prevPath.steps);
 
         return this.moove(path);
+    }
+
+    turnLeft() {
+        const character = this.character;
+
+        return new Promise(resolve => {
+            character.scale.x = Math.abs(character.scale.x) * -1;
+            resolve();
+        });
+    }
+
+    turnRight() {
+        const character = this.character;
+
+        return new Promise(resolve => {
+            character.scale.x = Math.abs(character.scale.x);
+            resolve();
+        });
     }
 
     getSpeedIndex (start, end, speed) {
@@ -122,7 +140,7 @@ export class MatrixWalker {
     ticker = delta => {
         const {steps, activeStep, finish, pause} = this.path;
         const nextStep = activeStep + 1;
-        const walker = this.walker;
+        const character = this.character;
 
         if (finish || steps.length <= nextStep) {
             this.path.finish = true;
@@ -133,26 +151,26 @@ export class MatrixWalker {
         if (pause) return;
 
         if (steps[activeStep].x < steps[nextStep].x) {
-            walker.scale.x = Math.abs(walker.scale.x);
+            character.scale.x = Math.abs(character.scale.x);
         } else {
-            walker.scale.x = Math.abs(walker.scale.x) * -1;
+            character.scale.x = Math.abs(character.scale.x) * -1;
         }
 
-        walker.x = steps[nextStep].x;
-        walker.y = steps[nextStep].y;
+        character.x = steps[nextStep].x;
+        character.y = steps[nextStep].y;
 
         this.path.activeStep = nextStep;
     };
 
     addTicker() {
         this.state.set(this.id, this.ticker);
-        this.walker.customHelpers.go();
+        this.character.customHelpers.go();
         this.isWalking = true;
     }
 
     removeTicker() {
         this.state.delete(this.id);
-        this.walker.customHelpers.stop();
+        this.character.customHelpers.stop();
         this.isWalking = false;
     }
 
@@ -208,10 +226,10 @@ export class MatrixWalker {
 
     getPosition() {
         return {
-            x: this.walker.x,
-            y: this.walker.y,
-            width: this.walker.width,
-            height: this.walker.height,
+            x: this.character.x,
+            y: this.character.y,
+            width: this.character.width,
+            height: this.character.height,
         };
     }
 

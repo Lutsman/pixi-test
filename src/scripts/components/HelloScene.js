@@ -208,7 +208,7 @@ export class HelloScene extends BaseClass {
                 return arr;
             }, []);
             const walker = new MatrixWalker({
-                walker: character,
+                character,
                 state: this.state,
                 container,
                 obstacles,
@@ -275,8 +275,12 @@ export class HelloScene extends BaseClass {
             walker2.go(middle2),
         ]).then(() => {
             setTimeout(() => {
-                walker1.goBack();
-                walker2.goBack();
+                walker1
+                    .goBack()
+                    .then(() => walker1.turnRight());
+                walker2
+                    .goBack()
+                    .then(() => walker2.turnLeft());
             }, 1000);
         });
 
