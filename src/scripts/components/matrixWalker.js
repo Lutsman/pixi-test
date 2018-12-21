@@ -152,7 +152,7 @@ export class MatrixWalker {
 
         if (steps[activeStep].x < steps[nextStep].x) {
             character.scale.x = Math.abs(character.scale.x);
-        } else {
+        } else if (steps[activeStep].x > steps[nextStep].x) {
             character.scale.x = Math.abs(character.scale.x) * -1;
         }
 

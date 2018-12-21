@@ -18,8 +18,9 @@ document.body.appendChild(app.view);
 const gameloop = stateExecutor;
 
 const onAssetsLoaded = (loader, res) => {
-    const team1 = creatRandomCharacters(res, 3);
-    const team2 = creatRandomCharacters(res, 3);
+    const charOptions = {};
+    const team1 = creatRandomCharacters(res, 3, charOptions);
+    const team2 = creatRandomCharacters(res, 3, charOptions);
 
     const helloSceneController = new HelloScene({
         width,
@@ -34,8 +35,8 @@ const onAssetsLoaded = (loader, res) => {
 };
 
 loader
-    .add(CHARACTER_SOURCE.goblin.name, CHARACTER_SOURCE.goblin.link)
-    .add(CHARACTER_SOURCE.boy.name, CHARACTER_SOURCE.boy.link)
-    .add(CHARACTER_SOURCE.dragon.name, CHARACTER_SOURCE.dragon.link)
-    .add(CHARACTER_SOURCE.pixie.name, CHARACTER_SOURCE.pixie.link)
+    .add(CHARACTER_SOURCE.goblin.type, CHARACTER_SOURCE.goblin.link)
+    .add(CHARACTER_SOURCE.boy.type, CHARACTER_SOURCE.boy.link)
+    .add(CHARACTER_SOURCE.dragon.type, CHARACTER_SOURCE.dragon.link)
+    .add(CHARACTER_SOURCE.pixie.type, CHARACTER_SOURCE.pixie.link)
     .load(onAssetsLoaded);

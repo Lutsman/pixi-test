@@ -36,8 +36,8 @@ export class HelloScene extends BaseClass {
         this.setEntetiesPosition();
         this.setCharacterPosition(this.team1, this.charOptions.team1, this.containOptions.team1);
         this.setCharacterPosition(this.team2, this.charOptions.team2, this.containOptions.team2);
-        this.setCharacterData(this.team1, {team: 'team1'});
-        this.setCharacterData(this.team2, {team: 'team2'});
+        this.setCharacterLocalData(this.team1, {team: 'team1'});
+        this.setCharacterLocalData(this.team2, {team: 'team2'});
         this.creatWalkers(this.team1, this.containOptions.team1);
         this.creatWalkers(this.team2, this.containOptions.team2);
         this.attachHandlers();
@@ -85,7 +85,6 @@ export class HelloScene extends BaseClass {
 
     setupCharacters(characters, options) {
         for (const character of characters) {
-            setupCharacter(character, options);
             setScale(character, options);
         }
     }
@@ -122,7 +121,7 @@ export class HelloScene extends BaseClass {
         }
     }
 
-    setCharacterData(characters, optionalFields = {}) {
+    setCharacterLocalData(characters, optionalFields = {}) {
         const charData = this.characterData;
         const characterArr = Array.isArray(characters) ? characters : [characters];
 
@@ -214,7 +213,7 @@ export class HelloScene extends BaseClass {
                 obstacles,
             });
 
-            this.setCharacterData(character, {walker});
+            this.setCharacterLocalData(character, {walker});
         }
     }
 
@@ -239,8 +238,11 @@ export class HelloScene extends BaseClass {
         const data = this.getCharacterData(character.customHelpers.id);
         const charOptions = {
             id: character.customHelpers.id,
-            name: `${character.charType} ${character.customHelpers.id}`,
-            hp: 100,
+            name: character.customHelpers.name,
+            hp: 100, // TODO hp and mana generation
+            maxHp: 100,
+            mana: 100,
+            maxMana: 100,
         };
 
         if (data.team === 'team1') {
@@ -281,9 +283,8 @@ export class HelloScene extends BaseClass {
                 walker2
                     .goBack()
                     .then(() => walker2.turnLeft());
-            }, 1000);
+            }, 2000);
         });
-
     };
 
     addTicker() {

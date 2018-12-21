@@ -1,5 +1,5 @@
-import {getRandomItemFromObj, getUniqueId} from './utilities';
-import {CHARACTER_SOURCE} from './characterSource';
+import {getRandomItemFromObj, getUniqueId, getRandomInt} from './utilities';
+import {CHARACTER_SOURCE, NAMES} from './characterSource';
 import {Spine} from './aliases';
 
 export const setupGoblin = character => {
@@ -96,30 +96,31 @@ export const setScale = (character, options) => {
     return character;
 };
 
+export const getRandomName = () => NAMES[getRandomInt(NAMES.length - 1)];
+
 export const setupCharacter = (character, options) => {
     let setuper;
 
-    switch (character.charType) {
-        case CHARACTER_SOURCE.goblin.name :
+    switch (character.customHelpers.type) {
+        case CHARACTER_SOURCE.goblin.type :
             setuper = setupGoblin;
             break;
-        case CHARACTER_SOURCE.boy.name :
+        case CHARACTER_SOURCE.boy.type :
             setuper = setupBoy;
             break;
-        case CHARACTER_SOURCE.pixie.name :
+        case CHARACTER_SOURCE.pixie.type :
             setuper = setupPixie;
             break;
-        case CHARACTER_SOURCE.dragon.name :
+        case CHARACTER_SOURCE.dragon.type :
             setuper = setupDragon;
             break;
     }
 
-    if (setuper && character.customHelpers === undefined) {
-        character.customHelpers = {
-            isAnimating: false,
-            id: getUniqueId(),
-        };
-    }
+    character.customHelpers = {
+        ...character.customHelpers,
+        isAnimating: false,
+        id: getUniqueId(),
+    };
 
     return setuper ? setuper(character, options) : character;
 };
@@ -128,11 +129,18 @@ export const creatRandomCharacters = (res, limit = 1, options) => {
     let characterSet = [];
 
     for (let i = 0; i < limit; i++) {
-        const charType = getRandomItemFromObj(CHARACTER_SOURCE).name;
-        let character = new Spine(res[charType].spineData);
-        character.charType = charType;
+        const type = getRandomItemFromObj(CHARACTER_SOURCE).type;
+        const name = getRandomName();
+        let character = new Spine(res[type].spineData);
+
+        character.customHelpers = {
+            type,
+            name,
+        };
+        character = setupCharacter(character, options);
         characterSet.push(character);
     }
 
     return characterSet;
 };
+
