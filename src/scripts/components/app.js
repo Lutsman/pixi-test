@@ -1,10 +1,8 @@
-import {Application, loader} from './aliases';
-import {CHARACTER_SOURCE} from './characterSource';
-import {creatRandomCharacters} from './characterCreator';
+import {Application, loader} from '../utils/aliases';
+import {CHARACTER_SOURCE} from '../utils/characterSource';
+import {creatRandomCharacters} from '../utils/characterCreator';
 import {HelloScene} from './HelloScene';
-import {stateExecutor} from './gameState';
-
-
+import {stateExecutor} from '../utils/gameState';
 
 const width = document.documentElement.clientWidth;
 const height = document.documentElement.clientHeight;

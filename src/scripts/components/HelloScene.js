@@ -1,10 +1,10 @@
-import {setupCharacter, setScale} from './characterCreator';
-import {getRandomInt, getUniqueId, execState} from './utilities';
 import {BaseClass} from './BaseClass';
 import {CharacterBar} from './CharacterBar';
 import {Button} from './Button';
-import {MatrixWalker} from './matrixWalker';
-import {setState, removeState} from "./gameState";
+import {MatrixWalker} from '../utils/matrixWalker';
+import {setState, removeState} from "../utils/gameState";
+import {setScale} from '../utils/characterCreator';
+import {getRandomInt, getUniqueId, execState} from '../utils/utilities';
 
 export class HelloScene extends BaseClass {
     constructor(options) {

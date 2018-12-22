@@ -1,4 +1,4 @@
-import {Container} from './aliases';
+import {Container} from '../utils/aliases';
 
 export class BaseClass {
     constructor(options) {

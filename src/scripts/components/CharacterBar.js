@@ -1,19 +1,22 @@
 import {BaseClass} from './BaseClass';
-import {Graphics, Text, TextStyle} from './aliases';
-import {parseColor, parseColorInObject, isNumeric} from './utilities';
+import {Indicator} from "./Indicator";
+import {Container, Graphics, Text, TextStyle} from '../utils/aliases';
+import {parseColor, parseColorInObject, isNumeric} from '../utils/utilities';
 
 export class CharacterBar extends BaseClass {
     constructor(options) {
         super(options);
-        this.currentCharOptions = {
-            id: options.id,
-            name: options.name,
-            hp: options.hp
-        };
-        this.messageName = null;
+        this.id = options.id;
+        this.name = options.name;
+        this.hp = options.hp;
+        this.maxHp = options.maxHp || options.hp;
+        this.mana = options.mana;
+        this.maxMana = options.maxMana || options.mana;
         this.textStyleOptions = parseColorInObject(options.style);
-        this.backgroundColor = parseColor(options.backgroundColor || '#2e4cff');
-        this.borderColor = parseColor(options.borderColor || '#ff4810');
+        this.backgroundColor = parseColor(options.backgroundColor || '#7fff5e');
+        this.nameBar = null; //TODO move name bar to component
+        this.hpBarController = null;
+        this.manaBarController = null;
 
         this.isFilled = false;
 
@@ -22,90 +25,151 @@ export class CharacterBar extends BaseClass {
 
     init() {
         this.checkFilled();
-        this.renderMessageName();
+        this.renderCharBar();
     }
 
-    renderMessageName() {
-        const container = this.container;
-        const {name} = this.currentCharOptions;
+    renderNameBar() {
+        const nameBar = new Container();
+        const {name} = this;
         const style = new TextStyle(this.textStyleOptions);
         const rectangle = new Graphics();
         const message = new Text(name, style);
 
-        rectangle.lineStyle(1, this.borderColor, 1);
         rectangle.beginFill(this.backgroundColor);
         rectangle.drawRect(0, 0, this.width || message.width * 1.2, this.height || message.height * 1.2);
         rectangle.endFill();
 
-        container.addChild(rectangle);
-        container.addChild(message);
-        this.messageName = message;
+        nameBar.addChild(rectangle);
+        nameBar.addChild(message);
+        nameBar.message = message;
+
+        return nameBar;
+    }
+
+    renderIndicator(options = {}) {
+        return new Indicator(options);
+    }
+
+    renderCharBar() {
+        const charBar = this.container;
+        const nameBar = this.nameBar = this.renderNameBar();
+        const hpBarController = this.hpBarController = this.renderIndicator({
+            count: this.hp,
+            maxCount: this.maxHp,
+            width: this.width,
+            height: 10,
+        });
+        const manaBarController = this.manaBarController = this.renderIndicator({
+            count: this.mana,
+            maxCount: this.maxMana,
+            width: this.width,
+            height: 10,
+            color: '#2e4cff',
+        });
+
+        hpBarController.container.y = nameBar.height;
+        manaBarController.container.y = nameBar.height + hpBarController.container.height;
+
+        charBar.addChild(nameBar);
+        charBar.addChild(hpBarController.container);
+        charBar.addChild(manaBarController.container);
     }
 
     setName(name) {
-        this.messageName.text = name;
-        this.currentCharOptions = {
-            ...this.currentCharOptions,
-            name,
-        };
+        this.nameBar.message.text = this.name = name;
     }
 
-    setHp(hp) {
-        this.currentCharOptions = {
-            ...this.currentCharOptions,
-            hp,
-        };
+    setHp(hp, maxHp) {
+        const hpBar = this.hpBarController;
+
+        hpBar.set(hp, maxHp);
+        const {count, maxCount} = hpBar.get();
+        this.hp = count;
+        this.maxHp = maxCount;
+    }
+
+    setMaxHp(maxHp) {
+        const hpBar = this.hpBarController;
+
+        hpBar.setMaxCount(maxHp);
+        this.maxHp = hpBar.getMaxCount();
+    }
+
+    setMana(mana, maxMana) {
+        const manaBar = this.manaBarController;
+
+        manaBar.set(mana, maxMana);
+        const {count, maxCount} = manaBar.get();
+        this.mana = count;
+        this.maxMana = maxCount;
+    }
+
+    setMaxMana(maxMana) {
+        const manaBar = this.manaBarController;
+
+        manaBar.setMaxCount(maxMana);
+        this.maxMana = manaBar.getMaxCount();
     }
 
     setStyle(style) {
         if (!style) return;
 
         this.textStyleOptions = parseColorInObject(style);
-        this.messageName.style = new TextStyle(this.textStyleOptions);
+        this.nameBar.style = new TextStyle(this.textStyleOptions);
     }
 
     setChar(options) {
-        const {name, hp, id, style} = options;
+        const {id, name, hp, maxHp, mana, maxMana, style} = options;
 
-        if (!id || !name || !isNumeric(hp)) return;
-
-        this.currentCharOptions = {
-            id,
-        };
-
+        this.id = id;
         this.setName(name);
-        this.setHp(hp);
+        this.setHp(hp, maxHp);
+        this.setMana(mana, maxMana);
         this.setStyle(style);
-        this.checkFilled();
+
+        if (!this.checkFilled()) {
+             this.reset();
+        }
     }
 
     getChar() {
-        return this.currentCharOptions;
+        const {id, name, hp, mana, textStyleOptions} = this;
+        return {
+            id,
+            name,
+            hp,
+            mana,
+            style: textStyleOptions,
+        };
     }
 
     reset() {
+        this.id = null;
         this.setName('');
-        this.setHp(null);
-        this.currentCharOptions = {};
+        this.setHp(0);
+        this.setMana(0);
         this.checkFilled();
     }
 
     checkFilled() {
-        const {name, id, hp} = this.currentCharOptions;
-        let isFilled = true;
+        const {name, id, hp, maxHp, mana, maxMana} = this;
 
         if (!name) {
-            isFilled = false;
+            return this.isFilled = false;
         }
 
         if (!id) {
-            isFilled = false;
+            return this.isFilled = false;
         }
 
-        if (!isNumeric(hp)) {
-            isFilled = false;
+        if (!isNumeric(hp) || !isNumeric(maxHp) || maxHp < 1) {
+            return this.isFilled = false;
         }
 
-        return this.isFilled = isFilled;
+        if (!isNumeric(mana) || !isNumeric(maxMana) || maxMana < 1) {
+            return this.isFilled = false;
+        }
+
+        return this.isFilled = true;
     }
 }

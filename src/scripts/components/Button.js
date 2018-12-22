@@ -1,6 +1,6 @@
 import {BaseClass} from './BaseClass';
-import {Text, TextStyle, Graphics} from './aliases';
-import {parseColor, parseColorInObject} from './utilities';
+import {Text, TextStyle, Graphics} from '../utils/aliases';
+import {parseColor, parseColorInObject} from '../utils/utilities';
 
 export class Button extends BaseClass{
     constructor(options) {
