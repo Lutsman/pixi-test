@@ -1,3 +1,5 @@
+// TODO avoid obstacles movment
+
 import {contain, hasCollision, getUniqueId, revertArray} from './utilities';
 
 export class MatrixWalker {
@@ -23,10 +25,6 @@ export class MatrixWalker {
 
     getPathTemplate(target) {
         return {
-            // curr: {
-            //     x: this.character.x,
-            //     y: this.character.y,
-            // },
             start: {
                 x: Math.floor(this.character.x),
                 y: Math.floor(this.character.y),
@@ -67,7 +65,7 @@ export class MatrixWalker {
         };
         const path = this.getPath(pathStart);
 
-        return this.moove(path);
+        return this.move(path);
     }
 
     goBack() {
@@ -80,7 +78,7 @@ export class MatrixWalker {
 
         path.steps = revertArray(prevPath.steps);
 
-        return this.moove(path);
+        return this.move(path);
     }
 
     turnLeft() {
@@ -174,7 +172,7 @@ export class MatrixWalker {
         this.isWalking = false;
     }
 
-    moove(path) {
+    move(path) {
         this.path = path;
         this.addTicker();
 

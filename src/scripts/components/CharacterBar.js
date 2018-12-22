@@ -17,6 +17,9 @@ export class CharacterBar extends BaseClass {
         this.nameBar = null; //TODO move name bar to component
         this.hpBarController = null;
         this.manaBarController = null;
+        this.nameBarHeight = 30; //TODO hardcoded, manage this
+        this.hpBarHeight = 10; //TODO hardcoded, manage this
+        this.manaBarHeight = 10; //TODO hardcoded, manage this
 
         this.isFilled = false;
 
@@ -36,7 +39,7 @@ export class CharacterBar extends BaseClass {
         const message = new Text(name, style);
 
         rectangle.beginFill(this.backgroundColor);
-        rectangle.drawRect(0, 0, this.width || message.width * 1.2, this.height || message.height * 1.2);
+        rectangle.drawRect(0, 0, this.width, this.nameBarHeight);
         rectangle.endFill();
 
         nameBar.addChild(rectangle);
@@ -57,13 +60,13 @@ export class CharacterBar extends BaseClass {
             count: this.hp,
             maxCount: this.maxHp,
             width: this.width,
-            height: 10,
+            height: this.hpBarHeight,
         });
         const manaBarController = this.manaBarController = this.renderIndicator({
             count: this.mana,
             maxCount: this.maxMana,
             width: this.width,
-            height: 10,
+            height: this.manaBarHeight,
             color: '#2e4cff',
         });
 

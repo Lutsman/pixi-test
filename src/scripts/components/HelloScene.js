@@ -11,7 +11,7 @@ export class HelloScene extends BaseClass {
         super(options);
         this.team1 = options.team1;
         this.team2 = options.team2;
-        this.allCharacters = this.team1.concat(this.team2);
+        this.allCharacters = [...this.team1, ...this.team2];
         this.characterData = new Map();
         this.state = null;
         this.containOptions = {};
@@ -22,13 +22,17 @@ export class HelloScene extends BaseClass {
         this.characterBarTeam1 = null;
         this.characterBarTeam2 = null;
         this.toolBar = null;
+        this.charBarOptions = { //TODO hardcoded, manage this
+            width: 200,
+            height: 50,
+        };
 
         this.init();
     }
 
     init() {
         this.renderScene();
-        this.containOptions = this.getContainOptions(this.width, this.height);
+        this.containOptions = this.getContainOptions();
         this.charOptions.team1 = this.getCharacterOptions(this.team1, this.containOptions.team1);
         this.charOptions.team2 = this.getCharacterOptions(this.team2, this.containOptions.team2, -1);
         this.setupCharacters(this.team1, this.charOptions.team1);
@@ -44,23 +48,23 @@ export class HelloScene extends BaseClass {
         this.addTicker();
     }
 
-    getContainOptions(width, height) {
+    getContainOptions() {
+        const {width, height} = this;
+        const headerHeight = this.getHeaderHeight();
         const width5 = width * 0.05;
         const width35 = width * 0.35;
         const width60 = width * 0.60;
-        const height5 = height * 0.05;
-        const height95 = height * 0.95;
         const team1 = {
             x: width5,
-            y: height5,
+            y: headerHeight,
             width: width35,
-            height: height95,
+            height: height - headerHeight,
         };
         const team2 = {
             x: width60,
-            y: height5,
+            y: headerHeight,
             width: width35,
-            height: height95,
+            height: height - headerHeight,
         };
 
         return {team1, team2};
@@ -81,6 +85,13 @@ export class HelloScene extends BaseClass {
         options.maxOffset = options.step - options.maxWidth;
 
         return options;
+    }
+
+    getHeaderHeight() {
+        return Math.max(
+            this.characterBarTeam1.container.height,
+            this.characterBarTeam2.container.height,
+        );
     }
 
     setupCharacters(characters, options) {
@@ -184,8 +195,8 @@ export class HelloScene extends BaseClass {
 
     renderCharBar() {
         return new CharacterBar({
-            width: 100,
-            height: 30,
+            width: 200,
+            height: 50,
         });
     }
 
@@ -263,13 +274,14 @@ export class HelloScene extends BaseClass {
         const char2 = this.characterBarTeam2.getChar();
         const walker1 = this.getCharacterData(char1.id).walker;
         const walker2 = this.getCharacterData(char2.id).walker;
+        const {x, y, width} = this.getCenterZone();
         const middle1 = {
-            x: this.width / 2 - 100,
-            y: this.height / 2 - 100,
+            x,
+            y,
         };
         const middle2 = {
-            x: this.width / 2 + 100,
-            y: this.height / 2 - 100,
+            x: x + width / 2,
+            y,
         };
 
         Promise.all([
@@ -293,5 +305,19 @@ export class HelloScene extends BaseClass {
 
     removeTicker() {
         removeState(this.id);
+    }
+
+    getCenterZone() {
+        const {allCharacters, width, height} = this;
+        const maxCharWidth = Math.max(...allCharacters.map(char => char.width));
+        const maxCharHeight = Math.max(...allCharacters.map(char => char.height));
+        const headerHeight = this.getHeaderHeight();
+
+        return {
+            x: width / 2 - maxCharWidth,
+            y: (height - headerHeight) / 2 - maxCharHeight / 2 + headerHeight,
+            width: maxCharWidth * 4,
+            height: maxCharHeight,
+        };
     }
 }

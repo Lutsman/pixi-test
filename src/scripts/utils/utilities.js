@@ -1,5 +1,3 @@
-import {CHARACTER_SOURCE} from "./characterSource";
-
 export const objectToArray = obj => {
     let arr = [];
 
@@ -108,7 +106,7 @@ export const objectEqual = ( x, y ) => {
     return true;
 };
 
-export const isEquivalent = (a, b) => {
+export const isEquivalentSimple = (a, b) => {
     // Create arrays of property names
     const aProps = Object.getOwnPropertyNames(a);
     const bProps = Object.getOwnPropertyNames(b);
