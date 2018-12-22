@@ -48,7 +48,7 @@ export class HelloScene extends BaseClass {
         this.addTicker();
     }
 
-    getContainOptions() {
+    getContainOptions() { // TODO make more beautifull
         const {width, height} = this;
         const headerHeight = this.getHeaderHeight();
         const width5 = width * 0.05;
