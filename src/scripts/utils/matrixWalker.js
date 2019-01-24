@@ -1,17 +1,26 @@
 // TODO avoid obstacles movment
 
-import {contain, hasCollision, getUniqueId, revertArray} from './utilities';
+import {
+    contain,
+    hasCollision,
+    getUniqueId,
+    revertArray,
+    getMatrix,
+    mapMatrix,
+    getLocalCoords,
+    showMatrix,
+} from './utilities';
 
 export class MatrixWalker {
     constructor({
-        character,
-        container,
-        obstacles,
-        state,
-        speed,
+                    character,
+                    container,
+                    obstacles,
+                    state,
+                    speed,
                 }) {
         this.character = character;
-        this.container = container;
+        this.fence = container;
         this.obstacles = obstacles;
         this.speed = speed || 1;
         this.state = state;
@@ -20,7 +29,6 @@ export class MatrixWalker {
         this.isWalking = false;
         this.id = getUniqueId();
         this.resolve = null;
-        this.reject = null;
     }
 
     getPathTemplate(target) {
@@ -99,10 +107,55 @@ export class MatrixWalker {
         });
     }
 
-    getSpeedIndex (start, end, speed) {
+    getSpeedIndex(start, end, speed) {
         return {
             x: speed * (end.x - start.x) / Math.abs(end.x - start.x),
             y: speed * (end.y - start.y) / Math.abs(end.y - start.y),
+        };
+    }
+
+    getPath(path) {
+        const {start, end, speed} = path;
+        const speedIndex = this.getSpeedIndex(start, end, speed);
+        const steps = this.getShortPath(start, end, speedIndex);
+        const character = {
+            x: 0,
+            y: 0,
+            width: 5,
+            height: 5,
+        };
+        const fence = {
+            x: 0,
+            y: 0,
+            width: 50,
+            height: 50,
+        };
+        const obstacles = [
+            {
+                x: 25,
+                y: 25,
+                width: 5,
+                height: 5,
+            },
+            {
+                x: 40,
+                y: 40,
+                width: 5,
+                height: 5,
+            },
+            {
+                x: 30,
+                y: 40,
+                width: 5,
+                height: 5,
+            },
+        ];
+        const matrix = this.getMappedMatrix(character, obstacles, fence);
+
+        return {
+            ...path,
+            steps,
+            // described: true,
         };
     }
 
@@ -123,16 +176,61 @@ export class MatrixWalker {
         return steps;
     }
 
-    getPath(path) {
-        const {start, end, speed} = path;
-        const speedIndex = this.getSpeedIndex(start, end, speed);
-        const steps = this.getShortPath(start, end, speedIndex);
+    getPathAroundObstacle(start, end, character, obstacle, speedIndex, limit = 1e4) {
 
-        return {
-            ...path,
-            steps,
-            // described: true,
-        };
+    }
+
+    getMappedMatrix(character, obstacles, container) {
+        const {width, height} = container;
+        let matrix = getMatrix(Math.floor(Math.abs(width)), Math.floor(Math.abs(height)), 1);
+        matrix = this.setObstaclesToMatrix(matrix, obstacles, container);
+        matrix = this.removeUnusableSpaces(matrix, character);
+
+        // for (const submatrix of matrix) {
+        //     console.log(submatrix.toString());
+        // }
+
+        console.dir(matrix);
+        showMatrix(matrix);
+
+        return matrix;
+    }
+
+    setObstaclesToMatrix(matrix, obstacles, container) {
+        for (const obstacle of obstacles) {
+            const {x1, x2, y1, y2} = getLocalCoords(obstacle, container);
+
+            for (let i = x1; i <= x2; i++) {
+                for (let j = y1; j <= y2; j++) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+
+        return matrix;
+    }
+
+    removeUnusableSpaces(matrix, character) {
+        let obstacleX = -1;
+        let obstacleY = -1;
+        const width = Math.floor(Math.abs(character.width));
+        const height = Math.floor(Math.abs(character.height));
+
+        return mapMatrix(matrix, (item, x, y) => {
+            const resultX = x - obstacleX >= width;
+            const resultY = y - obstacleY >= height;
+
+            if (item > 0 && (!resultX || !resultY)) {
+                return -1
+            }
+
+            if (item === 0) {
+                obstacleX = x;
+                obstacleY = y;
+            }
+
+            return item;
+        });
     }
 
     ticker = delta => {
@@ -176,7 +274,7 @@ export class MatrixWalker {
         this.path = path;
         this.addTicker();
 
-        return new Promise( resolve => this.resolve = resolve);
+        return new Promise(resolve => this.resolve = resolve);
     }
 
     stop() {
@@ -235,7 +333,7 @@ export class MatrixWalker {
         return this.path ? this.path.end : null;
     }
 
-    getPathHistory () {
+    getPathHistory() {
         return this.pathHistory;
     }
 }

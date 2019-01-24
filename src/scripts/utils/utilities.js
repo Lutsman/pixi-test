@@ -71,36 +71,36 @@ export const isNumeric = n => {
     return !isNaN(parseFloat(n)) && isFinite(n);
 };
 
-export const objectEqual = ( x, y ) => {
-    if ( x === y ) return true;
+export const objectEqual = (x, y) => {
+    if (x === y) return true;
     // if both x and y are null or undefined and exactly the same
 
-    if ( ! ( x instanceof Object ) || ! ( y instanceof Object ) ) return false;
+    if (!(x instanceof Object) || !(y instanceof Object)) return false;
     // if they are not strictly equal, they both need to be Objects
 
-    if ( x.constructor !== y.constructor ) return false;
+    if (x.constructor !== y.constructor) return false;
     // they must have the exact same prototype chain, the closest we can do is
     // test there constructor.
 
-    for ( var p in x ) {
-        if ( ! x.hasOwnProperty( p ) ) continue;
+    for (var p in x) {
+        if (!x.hasOwnProperty(p)) continue;
         // other properties were tested using x.constructor === y.constructor
 
-        if ( ! y.hasOwnProperty( p ) ) return false;
+        if (!y.hasOwnProperty(p)) return false;
         // allows to compare x[ p ] and y[ p ] when set to undefined
 
-        if ( x[ p ] === y[ p ] ) continue;
+        if (x[p] === y[p]) continue;
         // if they have the same strict value or identity then they are equal
 
-        if ( typeof( x[ p ] ) !== "object" ) return false;
+        if (typeof(x[p]) !== "object") return false;
         // Numbers, Strings, Functions, Booleans must be strictly equal
 
-        if ( ! Object.equals( x[ p ],  y[ p ] ) ) return false;
+        if (!Object.equals(x[p], y[p])) return false;
         // Objects and Arrays must be tested recursively
     }
 
-    for ( p in y ) {
-        if ( y.hasOwnProperty( p ) && ! x.hasOwnProperty( p ) ) return false;
+    for (p in y) {
+        if (y.hasOwnProperty(p) && !x.hasOwnProperty(p)) return false;
         // allows x[ p ] to be set to undefined
     }
     return true;
@@ -133,11 +133,11 @@ export const isEquivalentSimple = (a, b) => {
 };
 
 export const parseColor = color => {
-  if (typeof color !== 'string' || color[0] !== '#') {
-      return color;
-  }
+    if (typeof color !== 'string' || color[0] !== '#') {
+        return color;
+    }
 
-  return string2hex(color);
+    return string2hex(color);
 };
 
 export const parseColorInObject = (obj = {}) => {
@@ -247,3 +247,71 @@ export const execState = states => delta => {
 
 export const revertArray = arr =>
     arr.reduceRight((arr, item) => [...arr, item], []);
+
+export const getMatrix = (width, height, val) => {
+    let matrix = [];
+
+    for (let i = 0; i < width; i++) {
+        let submatrix = [];
+
+        if (val != undefined) {
+            for (let j = 0; j < height; j++) {
+                submatrix[j] = val;
+            }
+        } else {
+            submatrix.length = height;
+        }
+
+        matrix.push(submatrix);
+    }
+
+    return matrix;
+};
+
+export const mapMatrix = (matrix, callback, direction = 'vertical') => {
+    const newMatrix = getMatrix(matrix.length, matrix[0].length);
+
+    for (let i = 0; i < matrix.length; i++) {
+        const submatrix = matrix[i];
+        for (let j = 0; j < submatrix.length; j++) {
+            let width, height;
+
+            if (direction === 'vertical') {
+                width = i;
+                height = j;
+            } else {
+                width = j;
+                height = i;
+            }
+
+            newMatrix[width][height] = callback(matrix[width][height], width, height, matrix);
+        }
+    }
+
+    return newMatrix;
+};
+
+export const showMatrix = matrix => {
+    let lastX = 0;
+    let newLine = false;
+    let matrixStr = '!';
+    mapMatrix(matrix, (item, x, y) => {
+        if (lastX != x) {
+            lastX = x;
+            newLine = true;
+        }
+        matrixStr += `${newLine ? `\n!` : ''}${item === -1 ? 2 : item} `;
+        newLine = false;
+    });
+
+    console.log(matrixStr);
+};
+
+export const getLocalCoords = (container, offset) => {
+    const x1 = Math.floor(container.x - offset.x);
+    const x2 = Math.floor(x1 + Math.abs(container.width));
+    const y1 = Math.floor(container.y - offset.y);
+    const y2 = Math.floor(y1 + Math.abs(container.height));
+
+    return {x1, x2, y1, y2};
+};
